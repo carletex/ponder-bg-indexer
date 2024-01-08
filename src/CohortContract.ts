@@ -4,15 +4,29 @@ import { formatEther } from "viem";
 ponder.on("CohortContract:AddBuilder", async ({ event, context }) => {
   const { db } = context;
 
-  await db.CohortBuilder.create({
+  await db.CohortBuilder.upsert({
     // Builders can be in multiple cohorts, so we need to use a composite key.
-    // Adding block number since "addBuilder" can be called multiple times with the same builder.
-    id: `${event.args.to}-${event.log.address}-${event.block.number}`,
-    data: {
+    id: `${event.args.to}-${event.log.address}`,
+    create: {
       amount: parseFloat(formatEther(event.args.amount)),
       cohortContractAddress: event.log.address,
-      // ToDo. ens.
-    }
+      // ToDo. ens (context.client is a viem client, but doesn't expose getENSName)
+    },
+    update: {
+      amount: parseFloat(formatEther(event.args.amount)),
+    },
+  });
+});
+
+ponder.on("CohortContract:UpdateBuilder", async ({ event, context }) => {
+  const { db } = context;
+
+  // We could delete the builder if the amount is 0, but we'll keep it for now.
+  await db.CohortBuilder.update({
+    id: `${event.args.to}-${event.log.address}`,
+    data: {
+      amount: parseFloat(formatEther(event.args.amount)),
+    },
   });
 });
 

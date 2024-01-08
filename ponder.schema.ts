@@ -1,8 +1,8 @@
 import { createSchema } from "@ponder/core";
 
 // Keeping the schema simple for now. We could have relationships as:
-// - new Cohort table with Cohort info (name, balance, url, etc)
-// - new Builder table with Builder info (name, etc)
+// - new Cohort table with Cohort info (name, balance, totalWithdrawn, url, etc)
+// - new Builder table with Builder info (ens, etc)
 // - many-to-many relationship between Cohort and Builder (as CohortBuilder)
 export default createSchema((p) => ({
   CohortBuilder: p.createTable({
